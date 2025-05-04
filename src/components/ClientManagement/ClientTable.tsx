@@ -423,7 +423,7 @@ const ClientTable = () => {
                                                     <tr>
                                                         <th className="min-w-[120px] px-4 py-2 font-medium text-black"></th>
                                                         <th className="min-w-[120px] px-4 py-2 font-medium text-black">単価</th>
-                                                        <th className="px-4 py-2 font-medium text-black">リルト数</th>
+                                                        <th className="px-4 py-2 font-medium text-black">リスト数</th>
                                                         <th className="px-4 py-2 font-medium text-black">依頼数</th>
                                                     </tr>
                                                 </thead>

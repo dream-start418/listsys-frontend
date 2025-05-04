@@ -370,6 +370,24 @@ const ListDeliveryTable = () => {
     return (
         <>
             <div className="rounded-sm border border-gray-500 mx-4 px-6 pb-2.5 pt-6 shadow-default bg-white sm:px-8 xl:pb-1">
+                <div className="flex">
+                    <div className="bg-red-500 text-white px-4 py-2 rounded mx-4 mt-2">
+                        レッド：リストス
+                    </div>
+                    <div className="bg-blue-500 text-white px-4 py-2 rounded mx-4 mt-2">
+                        ブルー：ババット
+                    </div>
+                    <div className="bg-green-500 text-white px-4 py-2 rounded mx-4 mt-2">
+                        グリーン：ヒラメキ
+                    </div>
+                    <div className="bg-yellow-500 text-white px-4 py-2 rounded mx-4 mt-2">
+                        イエロー：リストル
+                    </div>
+                    <div className="bg-pink-500 text-white px-4 py-2 rounded mx-4 mt-2">
+                        ピンク：コンシューマー
+                    </div>
+                </div>
+                
                 <div className="max-w-full overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>

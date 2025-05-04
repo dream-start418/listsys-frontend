@@ -211,17 +211,34 @@ const ChangeRequest: React.FC = () => {
         return selectedValues;
     };
 
-    // const confirmValues = () => {
-    //     console.log(checkedCategories)
-    //     const selectedValues = getSelectedValues();
-    //     setMainCondition(JSON.stringify(selectedValues.main_condition, null, 2))
-    //     setSubCondition(JSON.stringify(selectedValues.sub_condition, null, 2))
-    //     setAreaSelection(JSON.stringify(selectedValues.area_condition, null, 2))
-    // };
+    const countSelectedCheckboxes = () => {
+        let count = 0;
+        Object.keys(checkedItems).forEach((key) => {
+            const options = checkedItems[key];
+            count += Object.values(options).filter(Boolean).length;
+        });
+        return count;
+    };
 
     const confirmValues = () => {
-
         const selectedValues = getSelectedValues();
+        const totalSelected = countSelectedCheckboxes();
+
+        if (totalSelected > 30) {
+            alert("条件の選択は30個まで可能です。超過分は依頼を分けてください。");
+            return 0;
+        }
+
+        // Count total number of tags across all conditions
+        const totalTags = Object.values(selectedValues).reduce((total, condition) => {
+            return total + Object.values(condition).reduce((sum, tags) => sum + tags.length, 0);
+        }, 0);
+
+        if (totalTags > 10) {
+            alert("タグ番号の入力は10個まで可能です。超過分は依頼を分けてください。");
+            return 0;
+        }
+
         const requestData = {
             projectName: currentRequest?.projectName,
             wishNum: currentRequest?.wishNum,
@@ -229,7 +246,7 @@ const ChangeRequest: React.FC = () => {
             subCondition: selectedValues.sub_condition || {}, // Ensure it's an object
             areaSelection: selectedValues.area_condition || {},
             areaMemo,
-       };
+        };
         if(requestData.projectName === "" || (requestData?.wishNum ?? -1) < 0 || Object.keys(requestData.mainCondition).length === 0 || Object.keys(requestData.areaSelection).length === 0){
             alert("必須項目を入力してください。");
             return 0;
