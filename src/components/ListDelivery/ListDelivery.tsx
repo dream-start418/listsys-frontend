@@ -375,7 +375,7 @@ const ListDeliveryTable = () => {
                         レッド：リストス
                     </div>
                     <div className="bg-blue-500 text-white px-4 py-2 rounded mx-4 mt-2">
-                        ブルー：ババット
+                        ブルー：パパット
                     </div>
                     <div className="bg-green-500 text-white px-4 py-2 rounded mx-4 mt-2">
                         グリーン：ヒラメキ
