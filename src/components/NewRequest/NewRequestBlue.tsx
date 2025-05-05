@@ -124,6 +124,12 @@ const NewRequestBlue: React.FC = () => {
     const confirmValues = () => {
 
         const selectedValues = getSelectedValues();
+
+        if (tags.length > 10) {
+            alert("タグ番号の入力は10個まで可能です。超過分は依頼を分けてください。");
+            return 0;
+        }
+
         const requestData = {
             projectName,
             wishNum,
