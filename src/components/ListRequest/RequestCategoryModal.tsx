@@ -46,7 +46,7 @@ const RequestCategoryModal: React.FC<RequestCategoryModalProps> = ({ isOpen, onC
                     <div className="flex justify-between ">
                         <Link href={`/new_request/red`}>
                             <button type="button"
-                                className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">
+                                className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
                                 レッド<br />
                                 {user?.clientCost?.red_price === undefined || user?.clientCost?.red_price < 0 
                                     ? "お問い合わせ" 
