@@ -7,6 +7,7 @@ import { requestGroupCheckData, requestGroupCheckData2, requestGroupCheckData3, 
 import GroupCheckBox from "../NewRequest/GroupCheckBox/GroupCheckBox";
 import { jwtDecode } from "jwt-decode";
 import { request } from "http";
+import DeliveryUploadModal from "./DeliveryUploadModal";
 
 interface RequestList {
     id: number;
@@ -66,6 +67,7 @@ const ListDeliveryTable = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isCheckBoxModalOpen, setIsCheckBoxModalOpen] = useState(false);
     const [currentCondition, setCurrentCondition] = useState("");
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
     const transformData = (
         input: Record<string, string[]>,
@@ -148,41 +150,29 @@ const ListDeliveryTable = () => {
         }
     };
 
-    const handleFileUpload = async () => {
-        if (!selectedFile) {
+    const handleFileUpload = async (file: File, listCount: number | null) => {
+        if (!file) {
             alert("ファイルを選択してください。");
             return;
         }
-
         if (!selectedList) {
             alert("リストが選択されていません。");
             return;
         }
         let categoryMark = "";
         switch (selectedList.category) {
-            case 'ピンク':
-                categoryMark = "Pink";
-                break;
-            case 'ブルー':
-                categoryMark = "Blue";
-                break;
-            case 'グリーン':
-                categoryMark = "Green";
-                break;
-            case 'イエロー':
-                categoryMark = "Yellow";
-                break;
-            case 'レッド':
-                categoryMark = "Red";
-                break;
-            default:
-                categoryMark = "Unknown";
-                break;
+            case 'ピンク': categoryMark = "Pink"; break;
+            case 'ブルー': categoryMark = "Blue"; break;
+            case 'グリーン': categoryMark = "Green"; break;
+            case 'イエロー': categoryMark = "Yellow"; break;
+            case 'レッド': categoryMark = "Red"; break;
+            default: categoryMark = "Unknown"; break;
         }
         const formData = new FormData();
-        formData.append("file", selectedFile);
+        formData.append("file", file);
         formData.append("requestId", selectedList.id.toString());
-        formData.append('category', categoryMark)
+        formData.append('category', categoryMark);
+        formData.append('listCount', listCount?.toString() || "");
 
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/upload-csv-file`, formData, {
@@ -191,19 +181,18 @@ const ListDeliveryTable = () => {
 
             const updatedRequest = response.data.updatedRequest;
             updatedRequest.category = selectedList.category;
-            // Update the selected list and request lists
             setSelectedList((prev) => (prev && (prev.id === updatedRequest.id && prev.category === updatedRequest.category) ? updatedRequest : prev));
             setRequestLists((prevRequests) =>
                 prevRequests.map((request) =>
                     (request.id === updatedRequest.id && request.category === updatedRequest.category) ? updatedRequest : request
                 )
             );
+            setIsUploadModalOpen(false);
         } catch (error) {
             console.error("Error uploading file:", error);
             alert("ファイルのアップロードに失敗しました。");
         }
     };
-
 
     const handleChangeFlag = (flag: boolean) => {
         setIsReadOnly(!flag); // Update read-only based on flag
@@ -731,10 +720,10 @@ const ListDeliveryTable = () => {
                             />
                         </div>
                     </div>
-                    <div className="space-y-4 flex justify-between">
-                        <div className="flex flex-col">
+                    <div className="space-y-4 flex justify-end py-2">
+                        {/* <div className="flex flex-col">
                             <label className="block text-gray-700 text-sm">CSV アップロード</label>
-                            {/* Hidden File Input */}
+                            
                             <input
                                 type="file"
                                 accept=".csv"
@@ -742,14 +731,13 @@ const ListDeliveryTable = () => {
                                 className="hidden"
                                 onChange={(e) => handleFileSelection(e.target.files)}
                             />
-                            {/* Custom Button to Trigger File Dialog */}
                             <button
                                 className="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:border-gray-500"
                                 onClick={() => document.getElementById("fileInput")?.click()}
                             >
                                 {selectedFile ? selectedFile.name : "ファイルを選択"}
                             </button>
-                        </div>
+                        </div> */}
                         <div className="flex justify-end items-center">
                             {(selectedList?.cancelState < 1) ? (
                                 <button
@@ -760,7 +748,7 @@ const ListDeliveryTable = () => {
                                 </button>
                             ) : (
                                 <button
-                                    className="mr-2 bg-gray-500 text-white px-4 py-2 rounded"
+                                    className="mr-2 bg-gray-400 text-white px-4 py-2 rounded"
                                     disabled
                                 >
                                     キャンセル
@@ -768,7 +756,7 @@ const ListDeliveryTable = () => {
                             )}
                             <button
                                 className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
-                                onClick={handleFileUpload}
+                                onClick={() => setIsUploadModalOpen(true)}
                             >
                                 納品
                             </button>
@@ -776,6 +764,13 @@ const ListDeliveryTable = () => {
                     </div>
                 </DetailModal>
             )}
+
+            {/* New Delivery Upload Modal */}
+            <DeliveryUploadModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUpload={handleFileUpload}
+            />
         </>
     );
 };
