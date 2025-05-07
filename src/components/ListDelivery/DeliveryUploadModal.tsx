@@ -20,15 +20,12 @@ const DeliveryUploadModal: React.FC<DeliveryUploadModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
-      setListCount(""); // Reset list count when file changes
     }
   };
 
   const handleUpload = () => {
     if (selectedFile) {
-      if (isZip) {
-        onUpload(selectedFile, null); // null means not required
-      } else if (listCount && !isNaN(Number(listCount))) {
+      if (listCount && !isNaN(Number(listCount))) {
         onUpload(selectedFile, Number(listCount));
       }
       setSelectedFile(null);
@@ -40,7 +37,7 @@ const DeliveryUploadModal: React.FC<DeliveryUploadModalProps> = ({
   // - file is zip (listCount not required)
   // - file is not zip and listCount is filled
   const canUpload =
-    !!selectedFile && (isZip || (!!listCount && !isNaN(Number(listCount))));
+    !!selectedFile && ((!!listCount && !isNaN(Number(listCount))));
 
   if (!isOpen) return null;
 
@@ -73,20 +70,18 @@ const DeliveryUploadModal: React.FC<DeliveryUploadModalProps> = ({
             />
           </div>
         </div>
-        {/* List count row */}
-        {!isZip && (
-          <div className="flex items-center mb-6">
-            <label className="w-32 py-2 px-3 text-center text-gray-700">リスト数</label>
-            <input
-              type="number"
-              min={1}
-              value={listCount}
-              onChange={(e) => setListCount(e.target.value)}
-              className="flex-1 ml-2 bg-green-300 text-gray-800 px-3 py-2 rounded border border-green-400 outline-none animate-pulse"
-              placeholder="リスト数"
-            />
-          </div>
-        )}
+        {/* List count row - 常に表示 */}
+        <div className="flex items-center mb-6">
+          <label className="w-32 py-2 px-3 text-center text-gray-700">リスト数</label>
+          <input
+            type="number"
+            min={1}
+            value={listCount}
+            onChange={(e) => setListCount(e.target.value)}
+            className="flex-1 ml-2 bg-green-300 text-gray-800 px-3 py-2 rounded border border-green-400 outline-none animate-pulse"
+            placeholder="リスト数"
+          />
+        </div>
         {/* Buttons row */}
         <div className="flex justify-end items-center space-x-2">
           <button

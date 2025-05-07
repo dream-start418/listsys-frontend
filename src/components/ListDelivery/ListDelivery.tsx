@@ -451,6 +451,11 @@ const ListDeliveryTable = () => {
                     onDownloadList={handleDownloadList}
                     deleteFlag={false}
                     downloadFlag={selectedList.completeState > 1}
+                    showDeliveryButton={true}
+                    onDeliveryClick={() => setIsUploadModalOpen(true)}
+                    showCancelButton={true}
+                    onCancelClick={handleCancelRequest}
+                    isCancelDisabled={selectedList?.cancelState >= 1}
                 >
                     <h2 className="text-lg font-bold mb-4 text-gray-700">リスト詳細</h2>
                     <div>
@@ -721,48 +726,6 @@ const ListDeliveryTable = () => {
                                 className="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:border-gray-500"
                                 readOnly
                             />
-                        </div>
-                    </div>
-                    <div className="space-y-4 flex justify-end py-2">
-                        {/* <div className="flex flex-col">
-                            <label className="block text-gray-700 text-sm">CSV アップロード</label>
-                            
-                            <input
-                                type="file"
-                                accept=".csv"
-                                id="fileInput"
-                                className="hidden"
-                                onChange={(e) => handleFileSelection(e.target.files)}
-                            />
-                            <button
-                                className="w-full border rounded px-3 py-2 text-gray-700 focus:outline-none focus:border-gray-500"
-                                onClick={() => document.getElementById("fileInput")?.click()}
-                            >
-                                {selectedFile ? selectedFile.name : "ファイルを選択"}
-                            </button>
-                        </div> */}
-                        <div className="flex justify-end items-center">
-                            {(selectedList?.cancelState < 1) ? (
-                                <button
-                                    className="mr-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                    onClick={handleCancelRequest}
-                                >
-                                    キャンセル
-                                </button>
-                            ) : (
-                                <button
-                                    className="mr-2 bg-gray-400 text-white px-4 py-2 rounded"
-                                    disabled
-                                >
-                                    キャンセル
-                                </button>
-                            )}
-                            <button
-                                className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
-                                onClick={() => setIsUploadModalOpen(true)}
-                            >
-                                納品
-                            </button>
                         </div>
                     </div>
                 </DetailModal>
