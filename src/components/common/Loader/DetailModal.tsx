@@ -10,11 +10,16 @@ interface DetailModalProps {
   children: React.ReactNode;
   onChangeFlag: (flag: boolean) => void;
   deleteFlag: boolean;
-  downloadFlag: boolean
+  downloadFlag: boolean;
   onDownloadList: () => void;
+  showDeliveryButton?: boolean;
+  onDeliveryClick?: () => void;
+  showCancelButton?: boolean;
+  onCancelClick?: () => void;
+  isCancelDisabled?: boolean;
 }
 
-const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, children, onSave, onChangeFlag, onDelete, deleteFlag, onDownloadList, downloadFlag }) => {
+const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, children, onSave, onChangeFlag, onDelete, deleteFlag, onDownloadList, downloadFlag, showDeliveryButton, onDeliveryClick, showCancelButton, onCancelClick, isCancelDisabled }) => {
   if (!isOpen) return null;
   const [changeFlag, setChangeFlag] = useState(false);
   const handleToggleChangeFlag = (flag: boolean) => {
@@ -60,8 +65,24 @@ const DetailModal: React.FC<DetailModalProps> = ({ isOpen, onClose, children, on
               </button>
             )}
           </div>
-          <div
-            className="ml-2">
+          <div className="ml-2">
+            {showCancelButton && (
+              <button
+                className={`mr-2 ${isCancelDisabled ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-600'} text-white px-4 py-2 rounded`}
+                onClick={onCancelClick}
+                disabled={isCancelDisabled}
+              >
+                キャンセル
+              </button>
+            )}
+            {showDeliveryButton && (
+              <button
+                className="mr-2 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                onClick={onDeliveryClick}
+              >
+                納品
+              </button>
+            )}
             {deleteFlag && (
               !changeFlag ? (
                 <button
