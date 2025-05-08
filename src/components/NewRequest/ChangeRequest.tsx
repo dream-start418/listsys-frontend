@@ -345,7 +345,15 @@ const ChangeRequest: React.FC = () => {
         )
     }
     return (
-        <div className="rounded-sm border border-stroke shadow-default bg-white p-4">
+        <div className="rounded-sm border border-stroke shadow-default bg-white p-4 relative">
+            <div className="fixed top-4 right-4 z-50 md:top-6 md:right-6">
+                <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+                    <span className="text-sm md:text-base font-medium">選択済み:</span>
+                    <span className={`text-lg md:text-xl font-bold ${countSelectedCheckboxes() > 30 ? 'text-red-400' : 'text-white'}`}>
+                        {countSelectedCheckboxes()}
+                    </span>
+                </div>
+            </div>
             <div>
                 <div className="my-4">
                     <label htmlFor="project_name" className="block mb-2 text-base font-base text-balck">プロジェクト名<span className="text-red-500 text-sm ml-2">※</span></label>
