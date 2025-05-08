@@ -40,13 +40,34 @@ const NewRequestFree: React.FC = () => {
 
 
     const handleCheckboxChange = (datasetName: string, category: string, option: string) => {
-        setCheckedItems((prev) => ({
-            ...prev,
-            [`${datasetName}-${category}`]: {
-                ...prev[`${datasetName}-${category}`],
-                [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
-            },
-        }));
+        setCheckedItems((prev) => {
+            const newCheckedItems = {
+                ...prev,
+                [`${datasetName}-${category}`]: {
+                    ...prev[`${datasetName}-${category}`],
+                    [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
+                },
+            };
+
+            // Find the dataset and category to get all options
+            const dataset = datasets.find(d => d.name === datasetName);
+            const categoryData = dataset?.data.find(c => c.category === category);
+            
+            if (categoryData) {
+                // Check if all options are now selected
+                const allOptionsSelected = categoryData.options.every(
+                    opt => newCheckedItems[`${datasetName}-${category}`]?.[opt]
+                );
+
+                // Update the category checkbox state
+                setCheckedCategories(prev => ({
+                    ...prev,
+                    [`${datasetName}-${category}`]: allOptionsSelected
+                }));
+            }
+
+            return newCheckedItems;
+        });
     };
 
     const handleCategoryCheckboxChange = (datasetName: string, category: string, options: string[]) => {
