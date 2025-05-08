@@ -74,13 +74,34 @@ const NewRequestBlue: React.FC = () => {
     }, []);
 
     const handleCheckboxChange = (datasetName: string, category: string, option: string) => {
-        setCheckedItems((prev) => ({
-            ...prev,
-            [`${datasetName}-${category}`]: {
-                ...prev[`${datasetName}-${category}`],
-                [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
-            },
-        }));
+        setCheckedItems((prev) => {
+            const newCheckedItems = {
+                ...prev,
+                [`${datasetName}-${category}`]: {
+                    ...prev[`${datasetName}-${category}`],
+                    [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
+                },
+            };
+
+            // Find the dataset and category to get all options
+            const dataset = datasets.find(d => d.name === datasetName);
+            const categoryData = dataset?.data.find(c => c.category === category);
+            
+            if (categoryData) {
+                // Check if all options are now selected
+                const allOptionsSelected = categoryData.options.every(
+                    opt => newCheckedItems[`${datasetName}-${category}`]?.[opt]
+                );
+
+                // Update the category checkbox state
+                setCheckedCategories(prev => ({
+                    ...prev,
+                    [`${datasetName}-${category}`]: allOptionsSelected
+                }));
+            }
+
+            return newCheckedItems;
+        });
     };
 
     const handleCategoryCheckboxChange = (datasetName: string, category: string, options: string[]) => {
@@ -245,7 +266,17 @@ const NewRequestBlue: React.FC = () => {
                     />
                 </div>
                 <div className="my-4">
-                    <label htmlFor="tags" className="block mb-2 text-base font-base text-black">タグ番号<span className="text-red-500 text-sm ml-2">※</span></label>
+                    <div className="flex items-center justify-start gap-x-2 mb-2">
+                        <label htmlFor="tags" className="text-base font-base text-black">
+                            タグ番号<span className="text-red-500 text-sm ml-2">※</span>
+                        </label>
+                        <div className="text-base font-medium px-3 py-1 rounded-md border border-green-600 bg-green-500">
+                            <span className={tags.length > 10 ? "text-red-500" : "text-white"}>
+                                {tags.length}
+                            </span>
+                            <span className="text-white">&nbsp;/10</span>
+                        </div>
+                    </div>
                     <TagInput data={tags} getTags={(tags: string[]) => setTags(tags)} />
                 </div>
             </div>

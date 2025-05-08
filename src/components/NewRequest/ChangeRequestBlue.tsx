@@ -164,13 +164,34 @@ const ChangeRequestBlue: React.FC = () => {
     }, [requestId]);
 
     const handleCheckboxChange = (datasetName: string, category: string, option: string) => {
-        setCheckedItems((prev) => ({
-            ...prev,
-            [`${datasetName}-${category}`]: {
-                ...prev[`${datasetName}-${category}`],
-                [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
-            },
-        }));
+        setCheckedItems((prev) => {
+            const newCheckedItems = {
+                ...prev,
+                [`${datasetName}-${category}`]: {
+                    ...prev[`${datasetName}-${category}`],
+                    [option]: !prev[`${datasetName}-${category}`]?.[option], // Toggle checkbox
+                },
+            };
+
+            // Find the dataset and category to get all options
+            const dataset = datasets.find(d => d.name === datasetName);
+            const categoryData = dataset?.data.find(c => c.category === category);
+            
+            if (categoryData) {
+                // Check if all options are now selected
+                const allOptionsSelected = categoryData.options.every(
+                    opt => newCheckedItems[`${datasetName}-${category}`]?.[opt]
+                );
+
+                // Update the category checkbox state
+                setCheckedCategories(prev => ({
+                    ...prev,
+                    [`${datasetName}-${category}`]: allOptionsSelected
+                }));
+            }
+
+            return newCheckedItems;
+        });
     };
 
     const handleCategoryCheckboxChange = (datasetName: string, category: string, options: string[]) => {
@@ -208,6 +229,12 @@ const ChangeRequestBlue: React.FC = () => {
     const confirmValues = () => {
 
         const selectedValues = getSelectedValues();
+
+        if (tags.length > 10) {
+            alert("タグ番号の入力は10個まで可能です。超過分は依頼を分けてください。");
+            return 0;
+        }
+        
         const requestData = {
             projectName: currentRequest?.projectName,
             wishNum: currentRequest?.wishNum,
@@ -323,7 +350,17 @@ const ChangeRequestBlue: React.FC = () => {
                         required />
                 </div>
                 <div className="my-4">
-                    <label htmlFor="tags" className="block mb-2 text-base font-base text-black">タグ番号<span className="text-red-500 text-sm ml-2">※</span></label>
+                    <div className="flex items-center justify-start gap-x-2 mb-2">
+                        <label htmlFor="tags" className="text-base font-base text-black">
+                            タグ番号<span className="text-red-500 text-sm ml-2">※</span>
+                        </label>
+                        <div className="text-base font-medium px-3 py-1 rounded-md border border-green-600 bg-green-500">
+                            <span className={tags.length > 10 ? "text-red-500" : "text-white"}>
+                                {tags.length}
+                            </span>
+                            <span className="text-white">&nbsp;/10</span>
+                        </div>
+                    </div>
                     <TagInput data={currentRequest?.tags || []} getTags={(tags: string[]) => setTags(tags)} />
                 </div>
             </div>
