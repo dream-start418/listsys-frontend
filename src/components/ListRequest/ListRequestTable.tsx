@@ -378,8 +378,10 @@ const ListRequestTable = () => {
                 link.href = url;
                 const now = new Date();
                 const formattedDate = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
-                const fileName = `${selectedList.projectName || 'MyProject'}_${formattedDate}.csv`;
-                link.setAttribute('download', fileName); // Rename the file using `fileName`
+                const originalFileName = selectedList.fileName || "download";
+                const ext = originalFileName.substring(originalFileName.lastIndexOf('.')) || '';
+                const fileName = `${selectedList.projectName || 'MyProject'}_${formattedDate}${ext}`;
+                link.setAttribute('download', fileName);
 
                 // Trigger the download
                 document.body.appendChild(link);
