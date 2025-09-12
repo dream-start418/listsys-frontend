@@ -140,7 +140,7 @@ const RedListDeliveryTable = () => {
 
             console.log("File uploaded successfully:", response.data);
             if(response.status === 200) {
-                alert("ファイルのアップロードが完了しました。");
+                alert("ファイルのアップロードが完了しました。\n 挿入済み: " + response.data.inserted + "\n 重複したデータ: " + response.data.duplicatesSkipped + "\n 無効なデータ: " + response.data.invalidSkipped);
                 //page reload
                 location.reload();
             } else {
