@@ -209,6 +209,9 @@ const NewRequestRed: React.FC = () => {
             if (response.ok) {
                 const data = await response.json();
                 console.log('Request saved successfully:', data);
+                if(response.status === 202){
+                    alert('同じエリアと作業選択を持つリクエストがすでに存在します。');
+                }
                 router.push("/list_request")
             } else {
                 console.error('Failed to save request:', response.statusText);

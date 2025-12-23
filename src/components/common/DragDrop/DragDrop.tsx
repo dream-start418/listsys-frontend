@@ -2,9 +2,10 @@ import { useState, DragEvent, ChangeEvent } from "react";
 
 interface DragDropProps {
     onFileUpload: (file: File) => void;
+    onNoMatchClick: () => void;
 }
 
-const DragDrop: React.FC<DragDropProps> = ({ onFileUpload }) => {
+const DragDrop: React.FC<DragDropProps> = ({ onFileUpload, onNoMatchClick }) => {
     const [dragActive, setDragActive] = useState(false);
     const [file, setFile] = useState<File | null>(null);
 
@@ -84,6 +85,15 @@ const DragDrop: React.FC<DragDropProps> = ({ onFileUpload }) => {
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4 text-sm"
                 onClick={handleClickUplioad}>
                 リスト登録
+            </button>
+            <button className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded ml-4 text-sm"
+                onClick={() => {
+                    // This will be handled by the parent component
+                    if (onNoMatchClick) {
+                        onNoMatchClick();
+                    }
+                }}>
+                該当なし登録
             </button>
         </div>
     );
