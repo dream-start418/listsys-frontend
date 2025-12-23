@@ -8,6 +8,7 @@ import GroupCheckBox from "../NewRequest/GroupCheckBox/GroupCheckBox";
 import DragDrop from "../common/DragDrop/DragDrop";
 import { jwtDecode } from "jwt-decode";
 import { request } from "http";
+import NoMatchMarkingModal from "../NewRequest/NoMatchMarkingModal";
 
 interface RequestList {
     id: number;
@@ -76,6 +77,8 @@ const RedListDeliveryTable = () => {
     const [isCheckBoxModalOpen, setIsCheckBoxModalOpen] = useState(false);
     const [currentCondition, setCurrentCondition] = useState("");
     const [redItems, setRedItems] = useState<RedListDeliveryTableProps[]>([]);
+    const [isNoMatchModalOpen, setIsNoMatchModalOpen] = useState(false);
+    const [stateFilter, setStateFilter] = useState<string>("all");
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -140,23 +143,30 @@ const RedListDeliveryTable = () => {
 
             console.log("File uploaded successfully:", response.data);
             if(response.status === 200) {
-                alert("ファイルのアップロードが完了しました。\n 挿入済み: " + response.data.inserted + "\n 重複したデータ: " + response.data.duplicatesSkipped + "\n 無効なデータ: " + response.data.invalidSkipped);
-                //page reload
-                location.reload();
-            } else {
-                alert(response.data.message);
+                alert("ファイルのアップロードが完了しました。\n 挿入済み: " + response.data.inserted + "\n 重複したデータ: " + response.data.duplicatesSkipped + "\n 無効なデータ: " + response.data.invalidSkipped + "\n 該当なしデータ: " + response.data.noMatchItems);
             }
-
+            //page reload
+            location.reload();
         } catch (error) {
             console.error("Error uploading file:", error);
-            alert("ファイルのアップロードに失敗しました。");
-        } finally {
-           () => {};
         }
     }
     const openDetailModal = (redItem: RedListDeliveryTableProps) => {
         setSelectedList(redItem);
         setIsDetailModalOpen(true);
+    };
+
+    // Filter redItems based on selected state
+    const filteredRedItems = redItems.filter(redItem => {
+        if (stateFilter === "all") return true;
+        return redItem.state === stateFilter;
+    });
+
+    // Get unique states for filter options
+    const uniqueStates = {
+        "登録済み": "登録済み",
+        "該当なし": "該当なし",
+        "未登録": "未登録",
     };
 
     if (loading) {
@@ -166,7 +176,32 @@ const RedListDeliveryTable = () => {
     return (
         <>
             <div className="rounded-sm border border-gray-500 mx-4 px-6 pb-2.5 pt-6 shadow-default bg-white">
-                <DragDrop onFileUpload={handleFileUpload} />
+                <div className="flex justify-between items-center gap-4">
+                    <DragDrop 
+                        onFileUpload={handleFileUpload} 
+                        onNoMatchClick={() => setIsNoMatchModalOpen(true)}
+                    />
+                    
+                    {/* State Filter */}
+                    <div className="mb-4 flex items-center gap-4">
+                        <label className="text-sm font-medium text-gray-700">状況でフィルター:</label>
+                        <select
+                            value={stateFilter}
+                            onChange={(e) => setStateFilter(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="all">すべて</option>
+                            {Object.keys(uniqueStates).map((state: string) => (
+                                <option key={state} value={state}>
+                                    {uniqueStates[state as keyof typeof uniqueStates]}
+                                </option>
+                            ))}
+                        </select>
+                        <span className="text-sm text-gray-500">
+                            {filteredRedItems.length}件中{redItems.length}件表示
+                        </span>
+                    </div>
+                </div>
                 <div className="max-w-full overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>
@@ -183,7 +218,7 @@ const RedListDeliveryTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {redItems.map((redItem, index) => (
+                            {filteredRedItems.map((redItem, index) => (
                                 <tr key={index} className="border-b">
                                     <td className="border-b px-4 py-5 text-black">{index + 1}</td>
                                     <td className="border-b px-4 py-5 text-black">{redItem.bigCategory}</td>
@@ -191,7 +226,9 @@ const RedListDeliveryTable = () => {
                                     <td className="border-b px-4 py-5 text-black">{redItem.area}</td>
                                     {/* <td className="border-b px-4 py-5 text-black">{requestList.listCount}</td> */}
                                     {/* <td className="border-b px-4 py-5 text-black">{requestList.category}</td> */}
-                                    <td className="border-b px-4 py-5 text-black">{redItem.state}</td>
+                                    <td className={`border-b px-4 py-5 text-black ${redItem.state === "登録済み" ? "text-green-500" : redItem.state === "該当なし" ? "text-red-500" : "text-gray-500"}`}>
+                                        {redItem.state}
+                                    </td>
                                     <td className="border-b px-4 py-5 text-black">
                                         {redItem.updatedDate
                                             ? new Intl.DateTimeFormat("ja-JP", {
@@ -278,6 +315,16 @@ const RedListDeliveryTable = () => {
                     </div>
                 </DetailModalRed>
             )}
+
+            <NoMatchMarkingModal
+                isOpen={isNoMatchModalOpen}
+                onClose={() => setIsNoMatchModalOpen(false)}
+                redItems={redItems}
+                onUpdate={() => {
+                    // Refresh the data
+                    window.location.reload();
+                }}
+            />
         </>
     );
 };

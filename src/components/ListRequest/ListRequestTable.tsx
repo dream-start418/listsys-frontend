@@ -237,6 +237,7 @@ const ListRequestTable = () => {
     };
 
     const openDetailModal = (requestList: RequestList) => {
+        console.log("requestList============================", requestList);
         setSelectedList(requestList);
         setIsDetailModalOpen(true);
     };
@@ -514,7 +515,8 @@ const ListRequestTable = () => {
                     onDelete={handleDeleteSelectedList}
                     deleteFlag={(selectedList.completeState == 0)}
                     onDownloadList={() => handleDownloadList()}
-                    downloadFlag={(selectedList.completeState > 1) && (selectedList.completeState != 11)}
+                    // downloadFlag={(selectedList.completeState > 1) && (selectedList.completeState != 11)}
+                    downloadFlag={(selectedList.completeState > 1)}
                 >
                     <h2 className="text-lg font-bold mb-4 text-gray-700">リスト詳細</h2>
                     <div className="space-y-4">
